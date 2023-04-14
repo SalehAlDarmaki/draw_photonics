@@ -8,4 +8,55 @@ I dropped a few lines of code that can help you draw an arbitrary polygon using 
 
 Also remember that in your application, the system will have optical inputs and outputs that are not part of the optimizable device, so those should somehow constrain your shape. Can you add inouts and outputs to the polygon in the code and show me how that would look?
 
+## Export shape to gds
 
+Add this script at the end of the code to export the resulting shape tpo a gds file.
+
+```
+gds_export_script = str("f = gdsopen('isolator_export.gds');\
+                         cellname = 'TOP';\
+                         gdsbegincell(f,cellname);\
+                         layer = 1;\
+                         layer_pin = '1:10';\
+                         layer_devrec = 68;\
+                         select('isolator');\
+                         poly = get('vertices');\
+                         gdsaddpoly(f,layer, poly);\
+                         select('wg_left');\
+                         gdsaddpath(f, layer_pin, "+str(dev_params['wg01'])+",  ["+str(x_0+0.05e-6)+", get('y'); "+str(x_0-0.05e-6)+", get('y')]); \
+                         gdsaddtext(f, 1, "+str(x_0)+", get('y'), 'opt1');\
+                         select('wg_right');\
+                         gdsaddpath(f, layer_pin, "+str(dev_params['wg02'])+",  ["+str(x_end-0.05e-6)+", get('y'); "+str(x_end+0.05e-6)+", get('y')]); \
+                         gdsaddtext(f, 1, "+str(x_end)+", get('y'), 'opt2');\
+                         select('mesh');\
+                         gdsaddrect(f, layer_devrec, 0,0, get('x span') ,  get('y span'));\
+                         gdsendcell(f);\
+                         gdsclose(f);\
+                        ")
+
+with lumapi.MODE(hide=False) as sim:
+    try:
+        print('Mode is FDTD = ', isinstance(sim, lumapi.FDTD))
+        sim.cd(project_directory)
+        RotatorR_TE(sim)
+        sim.addpoly(vertices=device_shape(prev_results))
+        sim.set('name','isolator')
+        sim.set('x', 0.0)
+        sim.set('y', 0.0)
+        sim.set('z', 0.0)
+        sim.set('z span', depth)
+        sim.set('material', 'Si (Silicon) - Palik')
+        sim.save('final_FDTD')
+        # Run Export Script
+        sim.eval(gds_export_script)
+        input('Press Enter to escape...')
+    except LumApiError as err:
+        print(C.YELLOW +f"LumAPI Exception {err=}, {type(err)=}" + C.ENDC)
+        sim.close()
+        raise
+    except BaseException as err:
+        print(C.RED +f"Unexpected {err=}, {type(err)=}"+ C.ENDC)
+        sim.close()
+        raise
+```
+  
