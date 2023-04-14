@@ -126,8 +126,8 @@ fom4 = ModeMatch(monitor_name='fom4',
 optimizer_1 = ScipyOptimizers(max_iter=30,
                               method='L-BFGS-B',
                               # scaling_factor = scaling_factor,
-                              pgtol=1.0e-4,
-                              ftol=1.0e-4,
+                              pgtol=1.0e-6,
+                              ftol=1.0e-6,
                               # target_fom = 0.0,
                               scale_initial_gradient_to=0.0)
 
