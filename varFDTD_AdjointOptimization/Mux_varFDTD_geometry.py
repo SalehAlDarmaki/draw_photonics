@@ -1,7 +1,7 @@
 #############################################################################
 # Python Module: polsplitter_varFDTD_geometry.py
 # Based on: Lumerical Example file: lmopt \ varFDTD_geometry.py
-#
+# Branch for work
 ##############################################################################
 
 import lumapi
