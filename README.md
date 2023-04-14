@@ -10,7 +10,7 @@ Also remember that in your application, the system will have optical inputs and 
 
 ## Export shape to gds
 
-Add this script at the end of the code to export the resulting shape tpo a gds file.
+Add this script at the end of the optimizer code to export the resulting shape to a gds file.
 
 ```
 gds_export_script = str("f = gdsopen('isolator_export.gds');\
